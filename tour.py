@@ -26,43 +26,37 @@ class Tour(object):
 
     def __getitem__(self, key):
         return self.pts[key]
-
+    
     def __str__(self):
         if len(self.pts)==0:
             return ''
+
         if len(self.pts)==1:
-            return '{}({},{}), total: {}'.format(self.pts[0].name,
-                                        self.pts[0].x,
-                                        self.pts[0].y,
-                                                 self.cost())
+            return ('{}({},{}), total: {}'
+                    ).format(self.pts[0].name, self.pts[0].x, self.pts[0].y,
+                             self.cost())
+
+        # Is this even a valid case?
         if len(self.pts)==2:
-            return '{}({},{}) -({})-> {}({},{}) -({})-> {}({},{}), total: {}'.format(self.pts[0].name,
-                                                            self.pts[0].x,
-                                                            self.pts[0].y,
-                                                            dist(self.pts[0], self.pts[1]),
-                                                                                    self.pts[1].name,
-                                                                                    self.pts[1].x,
-                                                                                    self.pts[1].y,
-                                                                                    dist(self.pts[1], self.pts[0]),
-                                                            self.pts[0].name,
-                                                            self.pts[0].x,
-                                                            self.pts[0].y,
-                                                                   self.cost())
+            return ('{}({},{}) -({})-> {}({},{}) -({})-> {}({},{}), total: {}'
+                    ) .format(self.pts[0].name, self.pts[0].x, self.pts[0].y,
+                              dist(self.pts[0], self.pts[1]),
+                              self.pts[1].name, self.pts[1].x, self.pts[1].y,
+                              dist(self.pts[1], self.pts[0]),
+                              self.pts[0].name, self.pts[0].x, self.pts[0].y,
+                              self.cost())
 
         strVal = ''
         for i in range(0,len(self.pts)-1):
-            strVal += '{}({},{}) -({})-> '.format(self.pts[i].name,
-                                                    self.pts[i].x,
-                                                    self.pts[i].y,
-                                                    dist(self.pts[i], self.pts[i+1]))
-        strVal += '{}({},{}) -({})-> {}({},{}), total: {}'.format(self.pts[-1].name,
-                                               self.pts[-1].x,
-                                               self.pts[-1].y,
-                                               dist(self.pts[-1], self.pts[0]),
-                                               self.pts[0].name,
-                                               self.pts[0].x,
-                                               self.pts[0].y,
-                                                                    self.cost())
+            strVal += ('{}({},{}) -({})-> '
+                       ).format(self.pts[i].name, self.pts[i].x, self.pts[i].y,
+                                dist(self.pts[i], self.pts[i+1]))
+
+        strVal += ('{}({},{}) -({})-> {}({},{}), total: {}'
+                   ).format(self.pts[-1].name, self.pts[-1].x, self.pts[-1].y,
+                            dist(self.pts[-1], self.pts[0]),
+                            self.pts[0].name, self.pts[0].x, self.pts[0].y,
+                            self.cost())
         return strVal
 
     def cost(self):
