@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import math
+import random
 import collections
 
 Point = collections.namedtuple('Point', ['x', 'y', 'name'])
@@ -59,6 +60,11 @@ class Tour(object):
                             self.cost())
         return strVal
 
+    def save(self, fname):
+        with open(fname, 'wt') as outf:
+            for pt in self.pts:
+                print('{} {}'.format(*pt), file=outf)
+
     def cost(self):
         if len(self.pts) < 2:
             return 0.0
@@ -69,4 +75,24 @@ class Tour(object):
 
         totalLen += dist(self.pts[0], self.pts[-1])
         return totalLen
+
+    def solve(self, iters=10):
+        for i in range(0,iters):
+            a = random.randint(1, len(self.pts)-2)
+            b = a
+            while a==b:
+                b = random.randint(a, len(self.pts)-1)
+            
+            oc = self.cost()
+            for j in range(0,b-a):
+                tmp = self.pts[j + a]
+                self.pts[j+a] = self.pts[b-j]
+                self.pts[b-j] = tmp
+            nc = self.cost()
+            if nc>oc:
+                for j in range(0,b-a):
+                    tmp = self.pts[j + a]
+                    self.pts[j+a] = self.pts[b-j]
+                    self.pts[b-j] = tmp
+
 
