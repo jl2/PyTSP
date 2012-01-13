@@ -2,7 +2,9 @@
 
 import os
 import sys
+import subprocess
 import os.path
+
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 from PyQt4 import QtScript
@@ -44,10 +46,8 @@ class TspWidget(QtGui.QWidget):
         qp.end()
         
     def doDrawing(self, qp):
-        blackPen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.DashLine)
-        redPen = QtGui.QPen(QtCore.Qt.red, 1, QtCore.Qt.DashLine)
-        bluePen = QtGui.QPen(QtCore.Qt.blue, 1, QtCore.Qt.DashLine)
-        greenPen = QtGui.QPen(QtCore.Qt.green, 1, QtCore.Qt.DashLine)
+        blackPen = QtGui.QPen(QtCore.Qt.black, 1, QtCore.Qt.SolidLine)
+        redPen = QtGui.QPen(QtCore.Qt.red, 1, QtCore.Qt.SolidLine)
         redBrush = QtGui.QBrush(QtCore.Qt.red)
 
         oldPt = self.ptMap.map(self.tour[0])
@@ -75,6 +75,7 @@ class TspViewer(QtGui.QMainWindow):
         self.resize(800, 800)
 
         self.central = TspWidget()
+        self.fname = fname
         if fname is not None and os.path.exists(fname):
             self.central.tour = tour.Tour(fname)
             self.updateTitle(self.central.tour.cost())
@@ -91,7 +92,11 @@ class TspViewer(QtGui.QMainWindow):
         solveAction = self.fileMenu.addAction('Solve')
         solveAction.setShortcut('Ctrl+S')
         self.connect(solveAction, QtCore.SIGNAL('triggered()'), lambda: self.solveTour())
-        
+
+        restartAction = self.fileMenu.addAction('Restart')
+        restartAction.setShortcut('Ctrl+R')
+        self.connect(restartAction, QtCore.SIGNAL('triggered()'), lambda: self.restart())
+
         exitAction = self.fileMenu.addAction('Exit')
         self.connect(exitAction, QtCore.SIGNAL('triggered()'), lambda: self.close())
         
@@ -105,12 +110,20 @@ class TspViewer(QtGui.QMainWindow):
 
     def updateTitle(self, newLen):
         self.setWindowTitle('TSP Length: {newLen}'.format(newLen = newLen))
+
+    def restart(self):
+        nfn = ''
+        if self.fname is not None:
+            nfn = self.fname
+        subprocess.Popen([sys.argv[0], nfn])
+        exit(0)
         
     def selectFile(self):
         fname = QtGui.QFileDialog.getOpenFileName(self, 'Open File...', '.', '*.txt;*.*')
             
         if fname is not None:
             if os.path.exists(fname):
+                self.fname = fname
                 self.central.tour = tour.Tour(fname)
                 self.updateTitle(self.central.tour.cost())
                 self.central.update()
